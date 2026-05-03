@@ -42,9 +42,17 @@ export const register = asyncHandler(async (req, res) => {
 export const login = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
 
+  console.log('[LOGIN] Request received for email:', email);
+
+  if (!email || !password) {
+    console.log('[LOGIN] Missing email or password');
+    throw new AppError('Email and password are required', 400);
+  }
+
   const result = await query('SELECT * FROM User_Account WHERE email = $1', [email]);
 
   if (!result.rows.length) {
+    console.log('[LOGIN] User not found for email:', email);
     throw new AppError('Invalid credentials', 401);
   }
 
@@ -52,8 +60,11 @@ export const login = asyncHandler(async (req, res) => {
   const isMatch = await bcrypt.compare(password, user.password);
 
   if (!isMatch) {
+    console.log('[LOGIN] Password mismatch for email:', email);
     throw new AppError('Invalid credentials', 401);
   }
+
+  console.log('[LOGIN] Login successful for email:', email);
 
   const token = signToken({ role: 'user', userId: user.user_id });
 
@@ -94,4 +105,3 @@ export const me = asyncHandler(async (req, res) => {
     user: req.user,
   });
 });
-

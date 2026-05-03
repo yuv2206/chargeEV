@@ -8,12 +8,14 @@ export default function LoginPage() {
   const { loginUser } = useAuth();
   const [form, setForm] = useState({ email: '', password: '' });
   const [error, setError] = useState('');
+  const API_BASE_URL = import.meta.env.VITE_API_URL;
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     setError('');
 
     try {
+      console.log('Calling:', `${API_BASE_URL}/api/auth/login`);
       const { data } = await api.post('/auth/login', form);
       loginUser(data);
       navigate('/app');

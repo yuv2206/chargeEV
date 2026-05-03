@@ -14,14 +14,24 @@ import { errorHandler } from './middleware/errorMiddleware.js';
 
 const app = express();
 
+const allowedOrigins = [
+  'http://localhost:5173',
+  'https://charge-ev-ecru.vercel.app',
+  process.env.CLIENT_URL,
+].filter(Boolean);
+
 app.use(
   cors({
-    origin: process.env.CLIENT_URL,
+    origin: allowedOrigins,
     credentials: true,
   })
 );
 app.use(express.json());
 app.use(morgan('dev'));
+
+app.get('/', (_req, res) => {
+  res.send('API is running');
+});
 
 app.get('/api/health', (_req, res) => {
   res.json({ success: true, message: 'EV Charging API is running' });
