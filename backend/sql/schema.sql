@@ -83,7 +83,29 @@ CREATE TABLE Maintenance_Log (
   remarks TEXT
 );
 
+-- =============================================================
+-- Indexes & Performance Optimizations
+-- =============================================================
+
+-- Ensure only one active tariff plan at a time
 CREATE UNIQUE INDEX one_active_tariff_idx ON Tariff_Plan(active_flag) WHERE active_flag = TRUE;
+
+-- Covering index for operational revenue reporting:
+-- Allows PostgreSQL to perform Index-Only Scans on dashboard revenue trend queries
+CREATE INDEX idx_payment_reporting ON Payment (payment_time)
+INCLUDE (amount, payment_status);
+
+-- Covering index for operational booking throughput:
+-- Accelerates dashboard date-range scans without touching the table heap
+CREATE INDEX idx_booking_reporting ON Booking (slot_start)
+INCLUDE (booking_id, status);
+
+-- Foreign key lookup indexes for fast relational joins
+CREATE INDEX idx_charger_station ON Charger (station_id);
+CREATE INDEX idx_booking_charger ON Booking (charger_id);
+CREATE INDEX idx_booking_user ON Booking (user_id);
+CREATE INDEX idx_session_booking ON Charging_Session (booking_id);
+CREATE INDEX idx_payment_session ON Payment (session_id);
 
 CREATE OR REPLACE FUNCTION prevent_double_booking()
 RETURNS TRIGGER AS $$

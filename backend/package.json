@@ -5,6 +5,8 @@
   "type": "module",
   "scripts": {
     "db:setup": "node src/scripts/setupDatabase.js",
+    "db:seed": "node src/scripts/seedLargeDataset.js",
+    "test:concurrency": "node src/scripts/testConcurrency.js",
     "dev": "nodemon src/server.js",
     "start": "node src/server.js"
   },

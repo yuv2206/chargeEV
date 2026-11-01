@@ -6,4 +6,5 @@ frontend/node_modules
 backend/uploads
 coverage
 *.log
+try.java
 
